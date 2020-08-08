@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>TodoList Constructor</title>
+</head>
+<body>
+	<script>
+
+		
+	const ToDoList = function (notes = []) {
+		this.notes = notes;
+		
+	};
+
+	Object.freeze(ToDoList);
+
+	ToDoList.prototype.addNote = function (name, content) {
+		const date = new Date();
+		const note = {
+			name, 
+			content,
+			createdAt: `${date.getFullYear()}.${date.getMonth() + 1}.${date.getDate()}`,
+			status: false,
+		};
+
+		this.notes = [note, ...this.notes];
+	};
+
+	ToDoList.prototype.removeNote = function (content) {
+		this.notes = this.notes.filter((note) => note.content !== content);
+	};
+
+	ToDoList.prototype.editNote = function (name, content, createdAt, status, confirm) {
+		let updatedNote = {name, content, createdAt, status};
+
+		if (confirm) {
+			this.notes = this.notes.map(note => {
+				let newNote = note;
+				if (note.content === content) {
+					newNote = updatedNote;
+				}
+				return newNote;
+			});
+		}
+	};
+
+	ToDoList.prototype.completeNote = function (content) {
+		this.notes = this.notes.map(note => ({
+			...note,
+			status: note.content === content ? true : note.status
+		}));
+	};
+
+	Object.defineProperty(ToDoList.prototype, 'statistic', {
+		get: function() {return this.notes.reduce((acc, note) => {
+				note.status === true && acc.status++;
+				return acc;
+			}, {
+				total: this.notes.length, status: 0
+			})
+		}
+	})
+
+	const summerToDoList = new ToDoList([
+		{name: 'Ibiza',	content: 'to dance', createdAt: '2020.22.11', status: false},
+		{name: 'Malibu',	content: 'to swim', createdAt: '2018.02.10', status: false},
+		]);
+
+	summerToDoList.addNote('Yalta', 'to walk');
+
+	summerToDoList.addNote('Sri-Lanka', 'to drink a tea')
+
+	summerToDoList.editNote('Kyiv', 'to walk', '2015.23.11', true, true);
+
+	summerToDoList.completeNote('to dance');
+
+	console.log(summerToDoList);
+
+	console.log(summerToDoList.statistic);
+
+
+	</script>
+</body>
+</html>
+
